@@ -178,16 +178,11 @@ func (a *Agent) flusher(shutdown chan struct{}, metricC chan string) error {
 		for {
 			select {
 			case <-shutdown:
-				if len(metricC) > 0 {
-					// keep going until outMetricC is flushed
-					continue
-				}
 				return
 			case m := <-metricC:
+				fmt.Println("received file")
 				for _, o := range a.Config.Outputs {
-
 					o.Output.Write(m)
-
 				}
 			}
 		}
@@ -219,8 +214,6 @@ func (a *Agent) Run(shutdown chan struct{}) error {
 			close(shutdown)
 		}
 	}()
-
-	//TODO: Good till this
 
 	wg.Add(len(a.Config.Inputs))
 	for _, input := range a.Config.Inputs {

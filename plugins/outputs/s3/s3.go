@@ -3,6 +3,7 @@ package s3
 import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"fmt"
 )
 
 type S3 struct {
@@ -33,6 +34,7 @@ func (f *S3) Description() string {
 }
 
 func (f *S3) Write(file string) error {
+	fmt.Println("Writing to s3 ", file)
 	return nil
 }
 

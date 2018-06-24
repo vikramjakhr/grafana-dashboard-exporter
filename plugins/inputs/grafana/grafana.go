@@ -3,6 +3,7 @@ package grafana
 import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"fmt"
 )
 
 type Grafana struct {
@@ -30,7 +31,8 @@ func (_ *Grafana) SampleConfig() string {
 }
 
 func (s *Grafana) Process(acc gde.Accumulator) error {
-	acc.AddFile("")
+	fmt.Println("collecting...")
+	acc.AddFile("fileeeee")
 	return nil
 }
 

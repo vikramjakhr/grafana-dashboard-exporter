@@ -3,6 +3,7 @@ package file
 import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"fmt"
 )
 
 type File struct {
@@ -28,6 +29,7 @@ func (f *File) Description() string {
 }
 
 func (f *File) Write(file string) error {
+	fmt.Println("Writing to file ", file)
 	return nil
 }
 
