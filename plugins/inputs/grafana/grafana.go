@@ -24,7 +24,8 @@ func (_ *Grafana) SampleConfig() string {
 	return sampleConfig
 }
 
-func (s *Grafana) Process() error {
+func (s *Grafana) Process(acc gde.Accumulator) error {
+	acc.AddFile("")
 	return nil
 }
 

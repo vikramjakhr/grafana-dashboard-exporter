@@ -17,11 +17,15 @@ func (f *S3) SampleConfig() string {
 	return sampleConfig
 }
 
+func (f *S3) Connect() error {
+	return nil
+}
+
 func (f *S3) Description() string {
 	return "Send grafana json to s3"
 }
 
-func (f *S3) Write() error {
+func (f *S3) Write(file string) error {
 	return nil
 }
 

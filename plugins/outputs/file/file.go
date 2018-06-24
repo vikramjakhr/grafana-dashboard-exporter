@@ -16,11 +16,15 @@ func (f *File) SampleConfig() string {
 	return sampleConfig
 }
 
+func (f *File) Connect() error {
+	return nil
+}
+
 func (f *File) Description() string {
 	return "Send grafana json to specified directory"
 }
 
-func (f *File) Write() error {
+func (f *File) Write(file string) error {
 	return nil
 }
 

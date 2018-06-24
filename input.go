@@ -8,6 +8,5 @@ type Input interface {
 	Description() string
 
 	// Process processes the input every "interval"
-	Process() error
+	Process(Accumulator) error
 }
-

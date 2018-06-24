@@ -10,6 +10,13 @@ import (
 	"regexp"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
 	"errors"
+	"os"
+	"log"
+	"io/ioutil"
+	"bytes"
+	"github.com/influxdata/toml/ast"
+	"github.com/influxdata/toml"
+	"path/filepath"
 )
 
 var (
@@ -70,7 +77,10 @@ var inputHeader = `
 `
 
 type Config struct {
-	Agent   *AgentConfig
+	Agent         *AgentConfig
+	InputFilters  []string
+	OutputFilters []string
+
 	Inputs  []*RunningInput
 	Outputs []*RunningOutput
 }
@@ -83,20 +93,39 @@ func NewConfig() *Config {
 			RoundInterval: true,
 		},
 
-		Inputs:  make([]*RunningInput, 0),
-		Outputs: make([]*RunningOutput, 0),
+		Inputs:        make([]*RunningInput, 0),
+		Outputs:       make([]*RunningOutput, 0),
+		InputFilters:  make([]string, 0),
+		OutputFilters: make([]string, 0),
 	}
 	return c
 }
 
+// InputConfig containing a name
+type InputConfig struct {
+	Name     string
+	Interval time.Duration
+}
+
+func (r *RunningInput) Name() string {
+	return "inputs." + r.Config.Name
+}
+
 type RunningInput struct {
-	Input gde.Input
+	Input  gde.Input
+	Config *InputConfig
+}
+
+// OutputConfig containing name
+type OutputConfig struct {
+	Name string
 }
 
 // RunningOutput contains the output configuration
 type RunningOutput struct {
 	Name   string
 	Output gde.Output
+	Config *OutputConfig
 }
 
 type AgentConfig struct {
@@ -248,4 +277,203 @@ func PrintOutputConfig(name string) error {
 		return errors.New(fmt.Sprintf("Output %s not found", name))
 	}
 	return nil
+}
+
+func getDefaultConfigPath() (string, error) {
+	envfile := os.Getenv("GDE_CONFIG_PATH")
+	homefile := os.ExpandEnv("${HOME}/.gde/gde.conf")
+	etcfile := "/etc/gde/gde.conf"
+	for _, path := range []string{envfile, homefile, etcfile} {
+		if _, err := os.Stat(path); err == nil {
+			log.Printf("I! Using config file: %s", path)
+			return path, nil
+		}
+	}
+
+	// if we got here, we didn't find a file in a default location
+	return "", fmt.Errorf("No config file specified, and could not find one"+
+		" in $GDE_CONFIG_PATH, %s, or %s", homefile, etcfile)
+}
+
+// LoadConfig loads the given config file and applies it to c
+func (c *Config) LoadConfig(path string) error {
+	var err error
+	if path == "" {
+		if path, err = getDefaultConfigPath(); err != nil {
+			return err
+		}
+	}
+	tbl, err := parseFile(path)
+	if err != nil {
+		return fmt.Errorf("Error parsing %s, %s", path, err)
+	}
+
+	// Parse agent table:
+	if val, ok := tbl.Fields["agent"]; ok {
+		subTable, ok := val.(*ast.Table)
+		if !ok {
+			return fmt.Errorf("%s: invalid configuration", path)
+		}
+		if err = toml.UnmarshalTable(subTable, c.Agent); err != nil {
+			log.Printf("E! Could not parse [agent] config\n")
+			return fmt.Errorf("Error parsing %s, %s", path, err)
+		}
+	}
+
+	// Parse all the rest of the plugins:
+	for name, val := range tbl.Fields {
+		subTable, ok := val.(*ast.Table)
+		if !ok {
+			return fmt.Errorf("%s: invalid configuration", path)
+		}
+
+		switch name {
+		case "agent":
+		case "outputs":
+			for pluginName, pluginVal := range subTable.Fields {
+				switch pluginSubTable := pluginVal.(type) {
+				case []*ast.Table:
+					for _, t := range pluginSubTable {
+						if err = c.addOutput(pluginName, t); err != nil {
+							return fmt.Errorf("Error parsing %s, %s", path, err)
+						}
+					}
+				default:
+					return fmt.Errorf("Unsupported config format: %s, file %s",
+						pluginName, path)
+				}
+			}
+		case "inputs":
+			for pluginName, pluginVal := range subTable.Fields {
+				switch pluginSubTable := pluginVal.(type) {
+				case []*ast.Table:
+					for _, t := range pluginSubTable {
+						if err = c.addInput(pluginName, t); err != nil {
+							return fmt.Errorf("Error parsing %s, %s", path, err)
+						}
+					}
+				default:
+					return fmt.Errorf("Unsupported config format: %s, file %s",
+						pluginName, path)
+				}
+			}
+			// Assume it's an input input for legacy config file support if no other
+			// identifiers are present
+		default:
+			if err = c.addInput(name, subTable); err != nil {
+				return fmt.Errorf("Error parsing %s, %s", path, err)
+			}
+		}
+	}
+	return nil
+}
+
+// parseFile loads a TOML configuration from a provided path and
+// returns the AST produced from the TOML parser. When loading the file, it
+// will find environment variables and replace them.
+func parseFile(fpath string) (*ast.Table, error) {
+	contents, err := ioutil.ReadFile(fpath)
+	if err != nil {
+		return nil, err
+	}
+
+	env_vars := envVarRe.FindAll(contents, -1)
+	for _, env_var := range env_vars {
+		env_val, ok := os.LookupEnv(strings.TrimPrefix(string(env_var), "$"))
+		if ok {
+			env_val = escapeEnv(env_val)
+			contents = bytes.Replace(contents, env_var, []byte(env_val), 1)
+		}
+	}
+
+	return toml.Parse(contents)
+}
+
+// escapeEnv escapes a value for inserting into a TOML string.
+func escapeEnv(value string) string {
+	return envVarEscaper.Replace(value)
+}
+
+func (c *Config) addOutput(name string, table *ast.Table) error {
+	if len(c.OutputFilters) > 0 && !sliceContains(name, c.OutputFilters) {
+		return nil
+	}
+	creator, ok := outputs.Outputs[name]
+	if !ok {
+		return fmt.Errorf("Undefined but requested output: %s", name)
+	}
+	output := creator()
+
+	if err := toml.UnmarshalTable(table, output); err != nil {
+		return err
+	}
+	ro := &RunningOutput{
+		Name:   name,
+		Output: output,
+	}
+
+	c.Outputs = append(c.Outputs, ro)
+	return nil
+}
+
+func (c *Config) addInput(name string, table *ast.Table) error {
+	if len(c.InputFilters) > 0 && !sliceContains(name, c.InputFilters) {
+		return nil
+	}
+
+	creator, ok := inputs.Inputs[name]
+	if !ok {
+		return fmt.Errorf("Undefined but requested input: %s", name)
+	}
+	input := creator()
+
+	if err := toml.UnmarshalTable(table, input); err != nil {
+		return err
+	}
+
+	rp := &RunningInput{
+		Input: input,
+	}
+	c.Inputs = append(c.Inputs, rp)
+	return nil
+}
+
+func (c *Config) LoadDirectory(path string) error {
+	walkfn := func(thispath string, info os.FileInfo, _ error) error {
+		if info == nil {
+			log.Printf("W! Telegraf is not permitted to read %s", thispath)
+			return nil
+		}
+		if info.IsDir() {
+			return nil
+		}
+		name := info.Name()
+		if len(name) < 6 || name[len(name)-5:] != ".conf" {
+			return nil
+		}
+		err := c.LoadConfig(thispath)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return filepath.Walk(path, walkfn)
+}
+
+// Inputs returns a list of strings of the configured inputs.
+func (c *Config) InputNames() []string {
+	var name []string
+	for _, input := range c.Inputs {
+		name = append(name, input.Name())
+	}
+	return name
+}
+
+// Outputs returns a list of strings of the configured outputs.
+func (c *Config) OutputNames() []string {
+	var name []string
+	for _, output := range c.Outputs {
+		name = append(name, output.Name)
+	}
+	return name
 }
