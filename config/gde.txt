@@ -1,0 +1,23 @@
+[agent]
+  interval = "5m"
+  round_interval = true
+  debug = true
+  logfile = "/var/log/gde/gde.log"
+
+[[outputs.file]]
+  output_dir = "<dir>" # required
+  output_format = "zip" # zip, dir
+
+[[outputs.s3]]
+  bucket = "<bucket-name>" # required
+  access_key = ""
+  secret_key = ""
+
+  output_format = "zip" # zip, dir
+
+[[inputs.grafana]]
+  host = "http://grafana.girnarsoft.co.in"
+  authorization = "Bearer eyJrIjoiNXMzTVBOMWJ2YXJhd0wxNER5MXV1U0E5dXlsQll0a1oiLCJuIjoidGVzdCIsImlkIjozfQ=="
+  datasource = true
+  dashboard = true
+  org = true
