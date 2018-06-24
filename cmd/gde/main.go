@@ -4,6 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
+
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/config"
+	_ "github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs/all"
+	_ "github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs/all"
+	"log"
 )
 
 var fQuiet = flag.Bool("quiet", false,
@@ -13,6 +21,17 @@ var fConfig = flag.String("config", "", "configuration file to load")
 var fVersion = flag.Bool("version", false, "display the version")
 var fUsage = flag.String("usage", "",
 	"print usage for a plugin, ie, 'grafana-dashboard-exporter --usage s3'")
+var fSampleConfig = flag.Bool("sample-config", false,
+	"print out full sample configuration")
+var fPidfile = flag.String("pidfile", "", "file to write our pid to")
+var fInputFilters = flag.String("input-filter", "",
+	"filter the inputs to enable, separator is :")
+var fInputList = flag.Bool("input-list", false,
+	"print available input plugins.")
+var fOutputFilters = flag.String("output-filter", "",
+	"filter the outputs to enable, separator is :")
+var fOutputList = flag.Bool("output-list", false,
+	"print available output plugins.")
 
 var (
 	nextVersion = "1.0.0"
@@ -76,23 +95,57 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
+	inputFilters, outputFilters := []string{}, []string{}
+	if *fInputFilters != "" {
+		inputFilters = strings.Split(":"+strings.TrimSpace(*fInputFilters)+":", ":")
+	}
+	if *fOutputFilters != "" {
+		outputFilters = strings.Split(":"+strings.TrimSpace(*fOutputFilters)+":", ":")
+	}
+
 	if len(args) > 0 {
 		switch args[0] {
 		case "version":
 			fmt.Printf("Grafana-dashboard-exporter %s (git: %s %s)\n", displayVersion(), branch, commit)
 			return
 		case "config":
+			config.PrintSampleConfig(
+				inputFilters,
+				outputFilters,
+			)
 			return
 		}
 	}
 
 	// switch for flags which just do something and exit immediately
 	switch {
+	case *fOutputList:
+		fmt.Println("Available Output Plugins:")
+		for k, _ := range outputs.Outputs {
+			fmt.Printf("  %s\n", k)
+		}
+		return
+	case *fInputList:
+		fmt.Println("Available Input Plugins:")
+		for k, _ := range inputs.Inputs {
+			fmt.Printf("  %s\n", k)
+		}
+		return
 	case *fVersion:
 		fmt.Printf("grafana-dashboard-exporter %s (git: %s %s)\n", displayVersion(), branch, commit)
 		return
+	case *fSampleConfig:
+		config.PrintSampleConfig(
+			inputFilters,
+			outputFilters,
+		)
+		return
 	case *fUsage != "":
-		usageExit(0)
+		err := config.PrintInputConfig(*fUsage)
+		err2 := config.PrintOutputConfig(*fUsage)
+		if err != nil && err2 != nil {
+			log.Fatalf("E! %s and %s", err, err2)
+		}
 		return
 	}
 }
