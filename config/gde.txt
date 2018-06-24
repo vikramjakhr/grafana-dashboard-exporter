@@ -2,7 +2,7 @@
   interval = "5m"
   round_interval = true
   debug = true
-  quite = false
+  quiet = false
   logfile = "/var/log/gde/gde.log"
 
 [[outputs.file]]

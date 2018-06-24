@@ -6,6 +6,11 @@ import (
 )
 
 type Grafana struct {
+	Host          string `toml:"host"`
+	Authorization string `toml:"authorization"`
+	Dashboard     bool `toml:"dashboard"`
+	Datasource    bool `toml:"datasource"`
+	Org           bool `toml:"org"`
 }
 
 func (_ *Grafana) Description() string {

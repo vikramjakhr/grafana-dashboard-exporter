@@ -5,12 +5,19 @@ import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
 )
 
-type S3 struct{}
+type S3 struct {
+	Bucket       string `toml:"bucket"`
+	AccessKey    string `toml:"access_key"`
+	SecretKey    string `toml:"secret_key"`
+	OutputFormat string `toml:"output_format"`
+}
 
 var sampleConfig = `
   bucket = "<bucket-name>" # required
   access_key = "$ACCESS_KEY" # required
   secret_key = "$SECRET_KEY" # required
+
+  output_format = "zip" # zip, dir
 `
 
 func (f *S3) SampleConfig() string {

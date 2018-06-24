@@ -5,7 +5,10 @@ import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
 )
 
-type File struct{}
+type File struct {
+	OutputDir    string `toml:"output_dir"`
+	OutputFormat string `toml:"output_format"`
+}
 
 var sampleConfig = `
   output_dir = "<dir>" # default is /tmp/gde

@@ -16,6 +16,7 @@ import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter/agent"
 	"github.com/vikramjakhr/grafana-dashboard-exporter/logger"
 	"os/signal"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var fDebug = flag.Bool("debug", false,
@@ -132,7 +133,7 @@ func reloadLoop(
 			log.Fatalf("E! Error: no inputs found, did you provide a valid config file?")
 		}
 
-		if int64(c.Agent.Interval) <= 0 {
+		if int64(c.Agent.Interval.Duration) <= 0 {
 			log.Fatalf("E! Agent interval must be positive, found %s",
 				c.Agent.Interval)
 		}
@@ -181,6 +182,8 @@ func reloadLoop(
 				close(shutdown)
 			}
 		}()
+
+		spew.Dump(c)
 
 		log.Printf("I! Starting Telegraf %s\n", displayVersion())
 		log.Printf("I! Loaded outputs: %s", strings.Join(c.OutputNames(), " "))

@@ -207,7 +207,7 @@ func (a *Agent) Run(shutdown chan struct{}) error {
 
 	// Round collection to nearest interval by sleeping
 	if a.Config.Agent.RoundInterval {
-		i := int64(a.Config.Agent.Interval)
+		i := int64(a.Config.Agent.Interval.Duration)
 		time.Sleep(time.Duration(i - (time.Now().UnixNano() % i)))
 	}
 
@@ -224,7 +224,7 @@ func (a *Agent) Run(shutdown chan struct{}) error {
 
 	wg.Add(len(a.Config.Inputs))
 	for _, input := range a.Config.Inputs {
-		interval := a.Config.Agent.Interval
+		interval := a.Config.Agent.Interval.Duration
 		// overwrite global interval if this plugin has it's own.
 		if input.Config.Interval != 0 {
 			interval = input.Config.Interval

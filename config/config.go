@@ -17,6 +17,7 @@ import (
 	"github.com/influxdata/toml/ast"
 	"github.com/influxdata/toml"
 	"path/filepath"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/internal"
 )
 
 var (
@@ -89,7 +90,7 @@ func NewConfig() *Config {
 	c := &Config{
 		// Agent defaults:
 		Agent: &AgentConfig{
-			Interval:      10 * time.Second,
+			Interval:      internal.Duration{Duration: 10 * time.Second},
 			RoundInterval: true,
 		},
 
@@ -130,7 +131,7 @@ type RunningOutput struct {
 
 type AgentConfig struct {
 	// Interval at which to gather information
-	Interval time.Duration
+	Interval internal.Duration
 
 	// RoundInterval rounds collection interval to 'interval'.
 	//     ie, if Interval=10s then always collect on :00, :10, :20, etc.
@@ -404,12 +405,18 @@ func (c *Config) addOutput(name string, table *ast.Table) error {
 	}
 	output := creator()
 
+	outputConfig, err := buildOutput(name, table)
+	if err != nil {
+		return err
+	}
+
 	if err := toml.UnmarshalTable(table, output); err != nil {
 		return err
 	}
 	ro := &RunningOutput{
 		Name:   name,
 		Output: output,
+		Config: outputConfig,
 	}
 
 	c.Outputs = append(c.Outputs, ro)
@@ -427,13 +434,20 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 	}
 	input := creator()
 
+	pluginConfig, err := buildInput(name, table)
+	if err != nil {
+		return err
+	}
+
 	if err := toml.UnmarshalTable(table, input); err != nil {
 		return err
 	}
 
 	rp := &RunningInput{
-		Input: input,
+		Input:  input,
+		Config: pluginConfig,
 	}
+
 	c.Inputs = append(c.Inputs, rp)
 	return nil
 }
@@ -476,4 +490,35 @@ func (c *Config) OutputNames() []string {
 		name = append(name, output.Name)
 	}
 	return name
+}
+
+// buildInput parses input specific items from the ast.Table,
+// builds the filter and returns a
+// models.InputConfig to be inserted into models.RunningInput
+func buildInput(name string, tbl *ast.Table) (*InputConfig, error) {
+	cp := &InputConfig{Name: name}
+	if node, ok := tbl.Fields["interval"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				dur, err := time.ParseDuration(str.Value)
+				if err != nil {
+					return nil, err
+				}
+
+				cp.Interval = dur
+			}
+		}
+	}
+	return cp, nil
+}
+
+// buildOutput parses output specific items from the ast.Table,
+// builds the filter and returns an
+// models.OutputConfig to be inserted into models.RunningInput
+// Note: error exists in the return for future calls that might require error
+func buildOutput(name string, tbl *ast.Table) (*OutputConfig, error) {
+	oc := &OutputConfig{
+		Name: name,
+	}
+	return oc, nil
 }
