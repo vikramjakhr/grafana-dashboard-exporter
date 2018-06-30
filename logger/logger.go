@@ -10,7 +10,7 @@ import (
 
 var prefixRegex = regexp.MustCompile("^[DIWE]!")
 
-// newTelegrafWriter returns a logging-wrapped writer.
+// newGDEWriter returns a logging-wrapped writer.
 func newGDEWriter(w io.Writer) io.Writer {
 	return &gdeLog{
 		writer: NewWriter(w),

@@ -182,7 +182,7 @@ func reloadLoop(
 			}
 		}()
 
-		log.Printf("I! Starting Telegraf %s\n", displayVersion())
+		log.Printf("I! Starting GDE %s\n", displayVersion())
 		log.Printf("I! Loaded outputs: %s", strings.Join(c.OutputNames(), " "))
 		log.Printf("I! Loaded inputs: %s", strings.Join(c.InputNames(), " "))
 

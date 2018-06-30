@@ -455,7 +455,7 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 func (c *Config) LoadDirectory(path string) error {
 	walkfn := func(thispath string, info os.FileInfo, _ error) error {
 		if info == nil {
-			log.Printf("W! Telegraf is not permitted to read %s", thispath)
+			log.Printf("W! GDE is not permitted to read %s", thispath)
 			return nil
 		}
 		if info.IsDir() {

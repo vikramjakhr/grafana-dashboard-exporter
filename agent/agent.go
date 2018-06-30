@@ -10,7 +10,7 @@ import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter/config"
 )
 
-// Agent runs telegraf and collects data based on the given config
+// Agent runs GDE and collects data based on the given config
 type Agent struct {
 	Config *config.Config
 }
@@ -49,7 +49,7 @@ func panicRecover(input *config.RunningInput) {
 			input.Name(), err, trace)
 		log.Println("E! PLEASE REPORT THIS PANIC ON GITHUB with " +
 			"stack trace, configuration, and OS information: " +
-			"https://github.com/influxdata/telegraf/issues/new")
+			"https://github.com/vikramjakhr/grafana-dashboard-exporter/issues/new")
 	}
 }
 
