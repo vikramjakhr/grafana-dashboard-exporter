@@ -14,5 +14,5 @@ type Metric interface {
 	Dir() string
 	Type() ValueType
 	Title() string
-	Content() string
+	Content() []byte
 }

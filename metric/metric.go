@@ -23,8 +23,8 @@ func (m *metric) Title() string {
 	return m.title
 }
 
-func (m *metric) Content() string {
-	return string(m.content)
+func (m *metric) Content() []byte {
+	return m.content
 }
 
 func New(dir string, mType gde.ValueType, title string, content []byte) *metric {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"io/ioutil"
 )
 
 type File struct {
@@ -35,20 +36,32 @@ func (f *File) Description() string {
 }
 
 func (f *File) Write(metric gde.Metric) error {
-	if metric.Dir() != "" && metric.Type() != "" && metric.Title() != "" && metric.Content() != "" {
-		fmt.Println(metric.Dir(), " | ", metric.Type(), " | ", metric.Title())
+	if metric.Dir() != "" && metric.Type() != "" && metric.Title() != "" && len(metric.Content()) > 0 {
 		dir := "/tmp"
 
 		if strings.Trim(f.OutputDir, " ") != "" {
 			dir = strings.TrimRight(f.OutputDir, "/")
 		}
 
-		dir = dir + "/" + metric.Dir()
+		dir = fmt.Sprintf("%s/%s/%ss/", dir, metric.Dir(), string(metric.Type()))
 
 		fmt.Println(dir)
 
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			os.Mkdir(dir, 0664)
+			os.MkdirAll(dir, 0774)
+		}
+
+		// writing json to file
+
+		switch metric.Type() {
+		case gde.Datasource:
+			filename := fmt.Sprintf("%s%s.json", dir, strings.Replace(metric.Title(), " ", "", -1))
+			ioutil.WriteFile(filename, metric.Content(), 0644)
+			break
+		case gde.Dashboard:
+			filename := fmt.Sprintf("%s%s.json", dir, strings.Replace(metric.Title(), " ", "", -1))
+			ioutil.WriteFile(filename, metric.Content(), 0644)
+			break
 		}
 
 	}
