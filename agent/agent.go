@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/vikramjakhr/grafana-dashboard-exporter/config"
+	"github.com/vikramjakhr/grafana-dashboard-exporter"
 )
 
 // Agent runs GDE and collects data based on the given config
@@ -59,7 +60,7 @@ func (a *Agent) gatherer(
 	shutdown chan struct{},
 	input *config.RunningInput,
 	interval time.Duration,
-	metricC chan string,
+	metricC chan gde.Metric,
 ) {
 	defer panicRecover(input)
 
@@ -170,7 +171,7 @@ func (a *Agent) flush(metrics string) {
 	wg.Wait()
 }
 
-func (a *Agent) flusher(shutdown chan struct{}, metricC chan string) error {
+func (a *Agent) flusher(shutdown chan struct{}, metricC chan gde.Metric) error {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
@@ -198,7 +199,7 @@ func (a *Agent) Run(shutdown chan struct{}) error {
 		a.Config.Agent.Interval, a.Config.Agent.Quiet)
 
 	// channel shared between all input threads for accumulating metrics
-	metricC := make(chan string, 100)
+	metricC := make(chan gde.Metric, 100)
 
 	// Round collection to nearest interval by sleeping
 	if a.Config.Agent.RoundInterval {

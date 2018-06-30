@@ -3,7 +3,7 @@ package gde
 // Accumulator is an interface for "accumulating" metrics from plugin(s).
 // The metrics are sent down a channel shared between all plugins.
 type Accumulator interface {
-	AddFile(file string)
+	AddOutput(org string, valueType ValueType, content []byte)
 
 	AddError(err error)
 }

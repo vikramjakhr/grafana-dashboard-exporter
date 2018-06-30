@@ -2,6 +2,7 @@ package agent
 
 import (
 	"log"
+	"github.com/vikramjakhr/grafana-dashboard-exporter"
 )
 
 type MetricMaker interface {
@@ -10,7 +11,7 @@ type MetricMaker interface {
 
 func NewAccumulator(
 	maker MetricMaker,
-	metrics chan string,
+	metrics chan gde.Metric,
 ) *accumulator {
 	acc := accumulator{
 		maker:   maker,
@@ -20,12 +21,12 @@ func NewAccumulator(
 }
 
 type accumulator struct {
-	metrics chan string
+	metrics chan gde.Metric
 	maker   MetricMaker
 }
 
-func (ac *accumulator) AddFile(file string) {
-	if file != "" {
+func (ac *accumulator) AddOutput(org string, valueType gde.ValueType, content []byte) {
+	if org != "" && valueType != "" && len(content) > 0 {
 		ac.metrics <- file
 	}
 }

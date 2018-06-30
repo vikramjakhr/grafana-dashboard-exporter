@@ -43,18 +43,19 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 			return err
 		}
 
-		log.Println("I! ", org.Name)
-
 		if s.Datasource {
-			ds, err := gClient.GetDataSources()
+			dSources, err := gClient.GetDataSources()
 			if err != nil {
 				return err
 			}
-			out, err := json.Marshal(ds)
-			if err != nil {
-				return err
+
+			for _, ds := range *dSources {
+				byts, err := json.Marshal(ds)
+				if err != nil {
+					return err
+				}
+				acc.AddOutput(org.Name, gde.Datasource, byts)
 			}
-			acc.AddFile(string(out))
 		}
 
 		if s.Dashboard {
@@ -68,11 +69,11 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 				if err != nil {
 					return err
 				}
-				out, err := json.Marshal(dashboard.Model)
+				byts, err := json.Marshal(dashboard.Model)
 				if err != nil {
 					return err
 				}
-				acc.AddFile(string(out))
+				acc.AddOutput(org.Name, gde.Dashboard, byts)
 			}
 		}
 	} else {
