@@ -29,8 +29,8 @@ func (f *File) Description() string {
 }
 
 func (f *File) Write(metric gde.Metric) error {
-	if metric.Name() != "" && metric.Type() != "" && metric.Content() != "" {
-		
+	if metric.Org() != "" && metric.Type() != "" && metric.Title() != "" && metric.Content() != "" {
+		fmt.Println(metric.Org(), " | ", metric.Type(), " | ", metric.Title())
 	}
 	return nil
 }

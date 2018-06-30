@@ -54,7 +54,7 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 				if err != nil {
 					return err
 				}
-				acc.AddOutput(org.Name, gde.Datasource, byts)
+				acc.AddOutput(org.Name, gde.Datasource, ds.Name, byts)
 			}
 		}
 
@@ -73,7 +73,8 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 				if err != nil {
 					return err
 				}
-				acc.AddOutput(org.Name, gde.Dashboard, byts)
+				name := dashboard.Model["title"].(string)
+				acc.AddOutput(org.Name, gde.Dashboard, name, byts)
 			}
 		}
 	} else {

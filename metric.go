@@ -11,7 +11,8 @@ const (
 
 type Metric interface {
 	// Getting data structure functions
-	Name() string
+	Org() string
 	Type() ValueType
+	Title() string
 	Content() string
 }

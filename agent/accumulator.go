@@ -26,9 +26,9 @@ type accumulator struct {
 	maker   MetricMaker
 }
 
-func (ac *accumulator) AddOutput(org string, valueType gde.ValueType, content []byte) {
+func (ac *accumulator) AddOutput(org string, valueType gde.ValueType, title string, content []byte) {
 	if org != "" && valueType != "" && len(content) > 0 {
-		ac.metrics <- metric.New(org, valueType, content)
+		ac.metrics <- metric.New(org, valueType, title, content)
 	}
 }
 
