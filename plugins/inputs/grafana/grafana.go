@@ -13,7 +13,6 @@ type Grafana struct {
 	Authorization string `toml:"authorization"`
 	Dashboard     bool `toml:"dashboard"`
 	Datasource    bool `toml:"datasource"`
-	Org           bool `toml:"org"`
 }
 
 func (_ *Grafana) Description() string {
@@ -25,7 +24,6 @@ var sampleConfig = `
   authorization = "Bearer <token>" # required
   dashboard = true # true if dashboard needs to be fetched; default true
   datasource = true # true if datasource needs to be fetched; default true
-  org = true # true if organization needs to be fetched; default true
 `
 
 func (_ *Grafana) SampleConfig() string {
@@ -34,30 +32,25 @@ func (_ *Grafana) SampleConfig() string {
 
 func (s *Grafana) Process(acc gde.Accumulator) error {
 	log.Printf("collecting...")
-	if s.Org || s.Datasource || s.Dashboard {
+	if s.Datasource || s.Dashboard {
 		gClient, err := api.NewGrafanaClient(s.Authorization, s.Host)
 		if err != nil {
 			return err
 		}
 
-		if s.Org {
-			org, err := gClient.GetCurrentOrg()
-			if err != nil {
-				return err
-			}
-			out, err := json.Marshal(org)
-			if err != nil {
-				return err
-			}
-			acc.AddFile(string(out))
+		org, err := gClient.GetCurrentOrg()
+		if err != nil {
+			return err
 		}
 
+		log.Println("I! ", org.Name)
+
 		if s.Datasource {
-			org, err := gClient.GetDataSources()
+			ds, err := gClient.GetDataSources()
 			if err != nil {
 				return err
 			}
-			out, err := json.Marshal(org)
+			out, err := json.Marshal(ds)
 			if err != nil {
 				return err
 			}
