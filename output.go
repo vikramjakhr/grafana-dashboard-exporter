@@ -8,5 +8,5 @@ type Output interface {
 	// SampleConfig returns the default configuration of the Output
 	SampleConfig() string
 	// Write takes in group of points to be written to the Output
-	Write(metrics []Metric) error
+	Write(metric Metric) error
 }

@@ -3,6 +3,7 @@ package agent
 import (
 	"log"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/metric"
 )
 
 type MetricMaker interface {
@@ -27,7 +28,7 @@ type accumulator struct {
 
 func (ac *accumulator) AddOutput(org string, valueType gde.ValueType, content []byte) {
 	if org != "" && valueType != "" && len(content) > 0 {
-		ac.metrics <- file
+		ac.metrics <- metric.New(org, valueType, content)
 	}
 }
 

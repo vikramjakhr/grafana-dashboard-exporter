@@ -33,8 +33,8 @@ func (f *S3) Description() string {
 	return "Send grafana json to s3"
 }
 
-func (f *S3) Write(file string) error {
-	fmt.Println("Writing to s3 \n", file)
+func (f *S3) Write(metric gde.Metric) error {
+	fmt.Println("Writing to s3 \n")
 	return nil
 }
 

@@ -122,7 +122,7 @@ func gatherWithTimeout(
 func (a *Agent) Test() error {
 	shutdown := make(chan struct{})
 	defer close(shutdown)
-	metricC := make(chan string)
+	metricC := make(chan gde.Metric)
 
 	// dummy receiver for the point channel
 	go func() {
@@ -153,14 +153,14 @@ func (a *Agent) Test() error {
 }
 
 // flush writes a list of metrics to all configured outputs
-func (a *Agent) flush(metrics string) {
+func (a *Agent) flush(metric gde.Metric) {
 	var wg sync.WaitGroup
 
 	wg.Add(len(a.Config.Outputs))
 	for _, o := range a.Config.Outputs {
 		go func(output *config.RunningOutput) {
 			defer wg.Done()
-			err := output.Output.Write(metrics)
+			err := output.Output.Write(metric)
 			if err != nil {
 				log.Printf("E! Error writing to output [%s]: %s\n",
 					output.Name, err.Error())
@@ -181,7 +181,6 @@ func (a *Agent) flusher(shutdown chan struct{}, metricC chan gde.Metric) error {
 			case <-shutdown:
 				return
 			case m := <-metricC:
-				fmt.Println("received file")
 				for _, o := range a.Config.Outputs {
 					o.Output.Write(m)
 				}

@@ -22,6 +22,6 @@ func (m *metric) Content() string {
 	return string(m.content)
 }
 
-func New(name string, mType gde.ValueType, content []byte) (metric) {
-	return metric{name: name, mType: mType, content: content}
+func New(name string, mType gde.ValueType, content []byte) *metric {
+	return &metric{name: name, mType: mType, content: content}
 }

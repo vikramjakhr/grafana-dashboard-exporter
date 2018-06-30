@@ -28,8 +28,10 @@ func (f *File) Description() string {
 	return "Send grafana json to specified directory"
 }
 
-func (f *File) Write(file string) error {
-	fmt.Println("Writing to file \n", file)
+func (f *File) Write(metric gde.Metric) error {
+	if metric.Name() != "" && metric.Type() != "" && metric.Content() != "" {
+		
+	}
 	return nil
 }
 
