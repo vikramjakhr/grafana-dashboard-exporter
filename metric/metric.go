@@ -5,14 +5,14 @@ import (
 )
 
 type metric struct {
-	org    string
+	dir    string
 	mType   gde.ValueType
 	title   string
 	content []byte
 }
 
-func (m *metric) Org() string {
-	return m.org
+func (m *metric) Dir() string {
+	return m.dir
 }
 
 func (m *metric) Type() gde.ValueType {
@@ -27,6 +27,6 @@ func (m *metric) Content() string {
 	return string(m.content)
 }
 
-func New(org string, mType gde.ValueType, title string, content []byte) *metric {
-	return &metric{org: org, mType: mType, title: title, content: content}
+func New(dir string, mType gde.ValueType, title string, content []byte) *metric {
+	return &metric{dir: dir, mType: mType, title: title, content: content}
 }

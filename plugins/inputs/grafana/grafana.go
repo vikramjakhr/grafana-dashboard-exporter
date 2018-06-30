@@ -6,6 +6,9 @@ import (
 	"log"
 	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs/grafana/api"
 	"encoding/json"
+	"time"
+	"fmt"
+	"strings"
 )
 
 type Grafana struct {
@@ -43,6 +46,12 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 			return err
 		}
 
+		tym := time.Now()
+
+		dir := fmt.Sprintf("%s@%s",
+			strings.Replace(org.Name, " ", "", -1),
+			tym.Format("2006-January-2T15:04:05"))
+
 		if s.Datasource {
 			dSources, err := gClient.GetDataSources()
 			if err != nil {
@@ -54,7 +63,7 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 				if err != nil {
 					return err
 				}
-				acc.AddOutput(org.Name, gde.Datasource, ds.Name, byts)
+				acc.AddOutput(dir, gde.Datasource, ds.Name, byts)
 			}
 		}
 
@@ -74,7 +83,7 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 					return err
 				}
 				name := dashboard.Model["title"].(string)
-				acc.AddOutput(org.Name, gde.Dashboard, name, byts)
+				acc.AddOutput(dir, gde.Dashboard, name, byts)
 			}
 		}
 	} else {

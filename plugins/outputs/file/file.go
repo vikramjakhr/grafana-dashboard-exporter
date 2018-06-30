@@ -4,6 +4,8 @@ import (
 	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
 	"fmt"
+	"os"
+	"strings"
 )
 
 type File struct {
@@ -21,6 +23,10 @@ func (f *File) SampleConfig() string {
 }
 
 func (f *File) Connect() error {
+	if strings.Trim(f.OutputDir, " ") != "" {
+		_, err := os.Stat(f.OutputDir)
+		return err
+	}
 	return nil
 }
 
@@ -29,8 +35,22 @@ func (f *File) Description() string {
 }
 
 func (f *File) Write(metric gde.Metric) error {
-	if metric.Org() != "" && metric.Type() != "" && metric.Title() != "" && metric.Content() != "" {
-		fmt.Println(metric.Org(), " | ", metric.Type(), " | ", metric.Title())
+	if metric.Dir() != "" && metric.Type() != "" && metric.Title() != "" && metric.Content() != "" {
+		fmt.Println(metric.Dir(), " | ", metric.Type(), " | ", metric.Title())
+		dir := "/tmp"
+
+		if strings.Trim(f.OutputDir, " ") != "" {
+			dir = strings.TrimRight(f.OutputDir, "/")
+		}
+
+		dir = dir + "/" + metric.Dir()
+
+		fmt.Println(dir)
+
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			os.Mkdir(dir, 0664)
+		}
+
 	}
 	return nil
 }
