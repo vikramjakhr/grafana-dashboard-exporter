@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"io/ioutil"
+	"log"
 )
 
 type File struct {
@@ -48,19 +49,29 @@ func (f *File) Write(metric gde.Metric) error {
 		fmt.Println(dir)
 
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			os.MkdirAll(dir, 0774)
+			err = os.MkdirAll(dir, 0774)
+			if err != nil {
+				log.Printf("E! Unable to create direcotry. %v", err)
+				return err
+			}
 		}
-
-		// writing json to file
 
 		switch metric.Type() {
 		case gde.Datasource:
 			filename := fmt.Sprintf("%s%s.json", dir, strings.Replace(metric.Title(), " ", "", -1))
-			ioutil.WriteFile(filename, metric.Content(), 0644)
+			err := ioutil.WriteFile(filename, metric.Content(), 0644)
+			if err != nil {
+				log.Printf("E! Unable to create file. %v", err)
+				return err
+			}
 			break
 		case gde.Dashboard:
 			filename := fmt.Sprintf("%s%s.json", dir, strings.Replace(metric.Title(), " ", "", -1))
-			ioutil.WriteFile(filename, metric.Content(), 0644)
+			err := ioutil.WriteFile(filename, metric.Content(), 0644)
+			if err != nil {
+				log.Printf("E! Unable to create file. %v", err)
+				return err
+			}
 			break
 		}
 
