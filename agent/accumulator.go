@@ -26,9 +26,20 @@ type accumulator struct {
 	maker   MetricMaker
 }
 
-func (ac *accumulator) AddOutput(dir string, valueType gde.ValueType, title string, content []byte) {
-	if dir != "" && valueType != "" && len(content) > 0 {
-		ac.metrics <- metric.New(dir, valueType, title, content)
+func (ac *accumulator) AddOutput(dir string, valueType gde.ValueType, action gde.Action, title string, content []byte) {
+	if action != "" {
+		switch action {
+		case gde.ActionCreate:
+			if dir != "" && valueType != "" && title != "" && len(content) > 0 {
+				ac.metrics <- metric.New(dir, valueType, action, title, content)
+			}
+			break
+		case gde.ActionZIP:
+			if dir != ""{
+				ac.metrics <- metric.New(dir, valueType, action, title, content)
+			}
+			break
+		}
 	}
 }
 

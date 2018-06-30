@@ -34,7 +34,6 @@ func (_ *Grafana) SampleConfig() string {
 }
 
 func (s *Grafana) Process(acc gde.Accumulator) error {
-	log.Printf("collecting...")
 	if s.Datasource || s.Dashboard {
 		gClient, err := api.NewGrafanaClient(s.Authorization, s.Host)
 		if err != nil {
@@ -63,7 +62,7 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 				if err != nil {
 					return err
 				}
-				acc.AddOutput(dir, gde.Datasource, ds.Name, byts)
+				acc.AddOutput(dir, gde.TypeDatasource, gde.ActionCreate, ds.Name, byts)
 			}
 		}
 
@@ -83,9 +82,12 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 					return err
 				}
 				name := dashboard.Model["title"].(string)
-				acc.AddOutput(dir, gde.Dashboard, name, byts)
+				acc.AddOutput(dir, gde.TypeDashboard, gde.ActionCreate, name, byts)
 			}
 		}
+
+		acc.AddOutput(dir, "", gde.ActionZIP, "", nil)
+
 	} else {
 		log.Printf("E! Error in grafana input plugin. Atleast one of Org, Datasource and Dashboard must be true.")
 	}
