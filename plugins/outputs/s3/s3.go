@@ -34,7 +34,7 @@ func (f *S3) Description() string {
 }
 
 func (f *S3) Write(file string) error {
-	fmt.Println("Writing to s3 ", file)
+	fmt.Println("Writing to s3 \n", file)
 	return nil
 }
 

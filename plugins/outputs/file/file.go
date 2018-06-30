@@ -29,7 +29,7 @@ func (f *File) Description() string {
 }
 
 func (f *File) Write(file string) error {
-	fmt.Println("Writing to file ", file)
+	fmt.Println("Writing to file \n", file)
 	return nil
 }
 
