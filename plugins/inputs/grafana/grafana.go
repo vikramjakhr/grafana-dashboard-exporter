@@ -63,6 +63,25 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 			}
 			acc.AddFile(string(out))
 		}
+
+		if s.Dashboard {
+			results, err := gClient.Search(api.SearchTypeDashDB, "")
+			if err != nil {
+				return err
+			}
+
+			for _, db := range *results {
+				dashboard, err := gClient.GetDashboard(db.Uri)
+				if err != nil {
+					return err
+				}
+				out, err := json.Marshal(dashboard.Model)
+				if err != nil {
+					return err
+				}
+				acc.AddFile(string(out))
+			}
+		}
 	} else {
 		log.Printf("E! Error in grafana input plugin. Atleast one of Org, Datasource and Dashboard must be true.")
 	}
