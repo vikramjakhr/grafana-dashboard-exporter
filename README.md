@@ -3,9 +3,9 @@
 GDE is an extremely powerful solution for backing up grafana dashboards. It's based on the influxdata telegraf theme.
 
 # Installation Procedure of GDE Agent
-##### Step 1: Download the [binary](https://github.com/vikramjakhr/grafana-dashboard-exporter/releases/releases/latest). Example command below.
+##### Step 1: Download the [binary](https://github.com/vikramjakhr/grafana-dashboard-exporter/releases/download/beta-v1.0.0/gde). Example command below.
 ```
-wget https://github.com/vikramjakhr/grafana-dashboard-exporter/releases/download/beta-v1.0.0/gde.tar.gz
+wget https://github.com/vikramjakhr/grafana-dashboard-exporter/releases/download/beta-v1.0.0/gde
 ```
 # Sample GDE config (/etc/gde/gde.conf)
 ```
