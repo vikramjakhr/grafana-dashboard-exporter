@@ -1,17 +1,17 @@
 package file
 
 import (
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
-	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"archive/zip"
+	"errors"
 	"fmt"
-	"os"
-	"strings"
+	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
+	"io"
 	"io/ioutil"
 	"log"
-	"errors"
-	"archive/zip"
+	"os"
 	"path/filepath"
-	"io"
+	"strings"
 )
 
 type File struct {

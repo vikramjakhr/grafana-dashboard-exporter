@@ -6,16 +6,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/agent"
 	"github.com/vikramjakhr/grafana-dashboard-exporter/config"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/logger"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
 	_ "github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs/all"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
 	_ "github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs/all"
 	"log"
-	"syscall"
-	"github.com/vikramjakhr/grafana-dashboard-exporter/agent"
-	"github.com/vikramjakhr/grafana-dashboard-exporter/logger"
 	"os/signal"
+	"syscall"
 )
 
 var fDebug = flag.Bool("debug", false,

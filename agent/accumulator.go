@@ -1,9 +1,9 @@
 package agent
 
 import (
-	"log"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
 	"github.com/vikramjakhr/grafana-dashboard-exporter/metric"
+	"log"
 )
 
 type MetricMaker interface {
@@ -35,7 +35,7 @@ func (ac *accumulator) AddOutput(dir string, valueType gde.ValueType, action gde
 			}
 			break
 		case gde.ActionFinish:
-			if dir != ""{
+			if dir != "" {
 				ac.metrics <- metric.New(dir, valueType, action, title, content)
 			}
 			break

@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/vikramjakhr/grafana-dashboard-exporter/config"
 	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/config"
 )
 
 // Agent runs GDE and collects data based on the given config

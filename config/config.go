@@ -1,23 +1,23 @@
 package config
 
 import (
-	"time"
-	"sort"
-	"fmt"
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
-	"strings"
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
-	"regexp"
-	"github.com/vikramjakhr/grafana-dashboard-exporter"
-	"errors"
-	"os"
-	"log"
-	"io/ioutil"
 	"bytes"
-	"github.com/influxdata/toml/ast"
+	"errors"
+	"fmt"
 	"github.com/influxdata/toml"
-	"path/filepath"
+	"github.com/influxdata/toml/ast"
+	"github.com/vikramjakhr/grafana-dashboard-exporter"
 	"github.com/vikramjakhr/grafana-dashboard-exporter/internal"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"regexp"
+	"sort"
+	"strings"
+	"time"
 )
 
 var (

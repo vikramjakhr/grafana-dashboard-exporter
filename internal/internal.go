@@ -2,8 +2,8 @@ package internal
 
 import (
 	"bytes"
-	"time"
 	"strconv"
+	"time"
 )
 
 // Duration just wraps time.Duration

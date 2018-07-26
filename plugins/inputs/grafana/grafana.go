@@ -1,21 +1,21 @@
 package grafana
 
 import (
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
-	"github.com/vikramjakhr/grafana-dashboard-exporter"
-	"log"
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs/grafana/api"
 	"encoding/json"
-	"time"
 	"fmt"
+	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/inputs/grafana/api"
+	"log"
 	"strings"
+	"time"
 )
 
 type Grafana struct {
 	Host          string `toml:"host"`
 	Authorization string `toml:"authorization"`
-	Dashboard     bool `toml:"dashboard"`
-	Datasource    bool `toml:"datasource"`
+	Dashboard     bool   `toml:"dashboard"`
+	Datasource    bool   `toml:"datasource"`
 }
 
 func (_ *Grafana) Description() string {

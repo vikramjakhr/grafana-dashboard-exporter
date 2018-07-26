@@ -5,18 +5,18 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 
-	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
-	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"archive/zip"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
-	"errors"
-	"strings"
-	"io/ioutil"
-	"os"
-	"log"
-	"archive/zip"
-	"path/filepath"
+	"github.com/vikramjakhr/grafana-dashboard-exporter"
+	"github.com/vikramjakhr/grafana-dashboard-exporter/plugins/outputs"
 	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 type S3 struct {
