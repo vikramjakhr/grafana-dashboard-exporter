@@ -7,7 +7,14 @@ GDE is an extremely powerful solution for backing up grafana dashboards. It's ba
 ```
 wget https://github.com/vikramjakhr/grafana-dashboard-exporter/releases/download/beta-v1.0.0/gde
 ```
-# Sample GDE config (/etc/gde/gde.conf)
+
+##### Step 2: Make binary executable and copy it to /usr/bin
+```
+chmod 775 gde
+cp gde /usr/bin
+```
+
+##### Step 3: Create a file named gde.conf in /etc/gde directory and copy/modify below config based on the requirement
 ```
 [agent]
   interval = "5m"
@@ -34,4 +41,9 @@ wget https://github.com/vikramjakhr/grafana-dashboard-exporter/releases/download
   datasource = true
   dashboard = true
   org = true
+```
+
+##### Step 4: Now start the binary using below command
+```
+nohup /usr/bin/gde > /var/log/gde.log 2>&1 &
 ```
