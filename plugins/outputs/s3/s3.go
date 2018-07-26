@@ -67,10 +67,10 @@ func (f *S3) Description() string {
 
 func (f *S3) Write(metric gde.Metric) error {
 	if metric.Action() != "" {
-		tmpDir := "/tmp/gde"
+		dir := "/tmp/gde"
 
-		baseDir := fmt.Sprintf("%s/%s", tmpDir, metric.Dir())
-		dir := fmt.Sprintf("%s/%ss/", baseDir, string(metric.Type()))
+		baseDir := fmt.Sprintf("%s/%s", dir, metric.Dir())
+		dir = fmt.Sprintf("%s/%ss/", baseDir, string(metric.Type()))
 
 		switch metric.Action() {
 		case gde.ActionCreate:
@@ -108,39 +108,39 @@ func (f *S3) Write(metric gde.Metric) error {
 				zipFileName := fmt.Sprintf("%s.zip", baseDir)
 				err := zipit(baseDir, zipFileName)
 				if err != nil {
-					removeDir(tmpDir)
+					removeDir(dir)
 					log.Printf("E! Unable to create zip file. %v", err)
 					return err
 				} else {
 					sess, err := f.makeSession()
 					if err != nil {
-						removeDir(tmpDir)
+						removeDir(dir)
 						return errors.New(fmt.Sprintf("E! failed to create aws session, %v", err))
 					}
 					err = uploadFileToS3(sess, f.Bucket, f.BucketPrefix, zipFileName)
 					if err != nil {
-						removeDir(tmpDir)
+						removeDir(dir)
 						return errors.New(fmt.Sprintf("E! Failed to upload data to %s/%s, %s\n",
 							f.Bucket, zipFileName, err))
 					}
 					log.Printf("D! %s uploaded to s3", zipFileName)
-					removeDir(tmpDir)
+					removeDir(dir)
 				}
 			}
 			if strings.EqualFold(f.OutputFormat, "dir") {
 				sess, err := f.makeSession()
 				if err != nil {
-					removeDir(tmpDir)
+					removeDir(dir)
 					return errors.New(fmt.Sprintf("E! failed to create aws session, %v", err))
 				}
 				err = uploadDirToS3(sess, f.Bucket, f.BucketPrefix, baseDir)
 				if err != nil {
-					removeDir(tmpDir)
+					removeDir(dir)
 					return errors.New(fmt.Sprintf("E! Failed to upload data to %s/%s, %s\n",
 						f.Bucket, baseDir, err))
 				}
 				log.Printf("D! %s uploaded to s3", baseDir)
-				removeDir(tmpDir)
+				removeDir(dir)
 			}
 			break
 		}
