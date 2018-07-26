@@ -9,7 +9,7 @@ const (
 	TypeDatasource ValueType = "Datasource"
 	TypeDashboard  ValueType = "Dashboard"
 	ActionCreate   Action    = "Create"
-	ActionZIP      Action    = "ZIP"
+	ActionFinish   Action    = "Finish"
 )
 
 type Metric interface {

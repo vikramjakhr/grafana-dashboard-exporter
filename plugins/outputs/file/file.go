@@ -34,8 +34,8 @@ func (f *File) Connect() error {
 		return err
 	}
 	of := strings.Trim(f.OutputFormat, " ")
-	if !(strings.EqualFold(of, "file") || strings.EqualFold(of, "zip")) {
-		return errors.New("E! File output_format can only be 'file' or 'zip' only")
+	if !(strings.EqualFold(of, "dir") || strings.EqualFold(of, "zip")) {
+		return errors.New("E! File output_format can only be 'dir' or 'zip' only")
 	}
 	return nil
 }
@@ -86,8 +86,7 @@ func (f *File) Write(metric gde.Metric) error {
 			}
 
 			break
-		case gde.ActionZIP:
-			fmt.Println(baseDir)
+		case gde.ActionFinish:
 			if strings.EqualFold(f.OutputFormat, "zip") {
 				err := zipit(baseDir, fmt.Sprintf("%s.zip", baseDir))
 				if err != nil {

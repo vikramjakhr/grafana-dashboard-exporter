@@ -34,7 +34,7 @@ func (ac *accumulator) AddOutput(dir string, valueType gde.ValueType, action gde
 				ac.metrics <- metric.New(dir, valueType, action, title, content)
 			}
 			break
-		case gde.ActionZIP:
+		case gde.ActionFinish:
 			if dir != ""{
 				ac.metrics <- metric.New(dir, valueType, action, title, content)
 			}

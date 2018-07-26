@@ -13,12 +13,13 @@
   bucket = "<bucket-name>" # required
   access_key = ""
   secret_key = ""
-
+  region = ""
+  bucket_prefix = ""
   output_format = "zip" # zip, dir
 
 [[inputs.grafana]]
-  host = "http://grafana.girnarsoft.co.in"
-  authorization = "Bearer eyJrIjoiNXMzTVBOMWJ2YXJhd0wxNER5MXV1U0E5dXlsQll0a1oiLCJuIjoidGVzdCIsImlkIjozfQ=="
+  host = "http://<grafana-host>"
+  authorization = "Bearer <token>"
   datasource = true
   dashboard = true
   org = true

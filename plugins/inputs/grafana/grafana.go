@@ -86,7 +86,7 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 			}
 		}
 
-		acc.AddOutput(dir, "", gde.ActionZIP, "", nil)
+		acc.AddOutput(dir, "", gde.ActionFinish, "", nil)
 
 	} else {
 		log.Printf("E! Error in grafana input plugin. Atleast one of Org, Datasource and Dashboard must be true.")
