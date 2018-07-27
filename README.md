@@ -37,7 +37,7 @@ cp gde /usr/bin
 
 [[inputs.grafana]]
   host = "http://<grafana-host>"
-  authorization = "Bearer <token>"
+  authorization = "<token>"
   datasource = true
   dashboard = true
 ```
