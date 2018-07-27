@@ -40,7 +40,6 @@ cp gde /usr/bin
   authorization = "Bearer <token>"
   datasource = true
   dashboard = true
-  org = true
 ```
 
 ##### Step 4: Now start the binary using below command
