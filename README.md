@@ -1,4 +1,4 @@
-# GDE (Grafana Dashboard Exporter)
+# GDE (Grafana Dashboard Exporter) [![CircleCI](https://circleci.com/gh/vikramjakhr/grafana-dashboard-exporter/tree/master.svg?style=svg)](https://circleci.com/gh/vikramjakhr/grafana-dashboard-exporter/tree/master)
 
 GDE is an extremely powerful solution for backing up grafana dashboards. It's based on the influxdata telegraf theme.
 
