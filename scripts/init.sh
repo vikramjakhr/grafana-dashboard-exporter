@@ -1,15 +1,15 @@
 #! /usr/bin/env bash
 
 ### BEGIN INIT INFO
-# Provides:          kapacitord
+# Provides:          gde
 # Required-Start:    $all
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start kapacitord at boot time
+# Short-Description: Start gde at boot time
 ### END INIT INFO
 
-# If you modify this, please make sure to also edit kapacitor.service
+# If you modify this, please make sure to also edit gde.service
 # this init script supports three different variations:
 #  1. New lsb that define start-stop-daemon
 #  2. Old lsb that don't have start-stop-daemon but define, log, pidofproc and killproc
@@ -18,25 +18,25 @@
 # In the third case we have to define our own functions which are very dumb
 # and expect the args to be positioned correctly.
 
-DEFAULT=/etc/default/kapacitor
+DEFAULT=/etc/default/gde
 
 # Process name ( For display )
-NAME=kapacitor
+NAME=gde
 
 # User and group
-USER=kapacitor
-GROUP=kapacitor
+USER=gde
+GROUP=gde
 
 # Daemon name, where is the actual executable
 # If the daemon is not there, then exit.
-DAEMON=/usr/bin/kapacitord
+DAEMON=/usr/bin/gde
 [ -x $DAEMON ] || exit 5
 
 # Configuration file
-CONFIG=/etc/kapacitor/kapacitor.conf
+CONFIG=/etc/gde/gde.conf
 
 # PID file for the daemon
-PIDFILE=/var/run/kapacitor/kapacitord.pid
+PIDFILE=/var/run/gde/gde.pid
 PIDDIR=`dirname $PIDFILE`
 if [ ! -d "$PIDDIR" ]; then
     mkdir -p $PIDDIR
@@ -60,14 +60,14 @@ if [ ! -f "$STDOUT" ]; then
 fi
 
 if [ -z "$STDERR" ]; then
-    STDERR=/var/log/kapacitor/kapacitord.err
+    STDERR=/var/log/gde/gde.err
 fi
 
 if [ ! -f "$STDERR" ]; then
     mkdir -p $(dirname $STDERR)
 fi
 
-# Overwrite init script variables with /etc/default/kapacitor values
+# Overwrite init script variables with /etc/default/gde values
 if [ -r $DEFAULT ]; then
     source $DEFAULT
 fi
@@ -157,9 +157,9 @@ case $1 in
 
         log_success_msg "Starting the process" "$NAME"
         if which start-stop-daemon > /dev/null 2>&1; then
-            start-stop-daemon --chuid $GROUP:$USER --start --quiet --pidfile $PIDFILE --exec $DAEMON -- -pidfile $PIDFILE -config $CONFIG $KAPACITOR_OPTS >>$STDOUT 2>>$STDERR &
+            start-stop-daemon --chuid $GROUP:$USER --start --quiet --pidfile $PIDFILE --exec $DAEMON -- -pidfile $PIDFILE -config $CONFIG $GDE_OPTS >>$STDOUT 2>>$STDERR &
         else
-            su -s /bin/sh -c "nohup $DAEMON -pidfile $PIDFILE -config $CONFIG $KAPACITOR_OPTS >>$STDOUT 2>>$STDERR &" $USER
+            su -s /bin/sh -c "nohup $DAEMON -pidfile $PIDFILE -config $CONFIG $GDE_OPTS >>$STDOUT 2>>$STDERR &" $USER
         fi
         log_success_msg "$NAME process was started"
         ;;

@@ -1,42 +1,42 @@
 #!/bin/bash
 
 BIN_DIR=/usr/bin
-DATA_DIR=/var/lib/kapacitor
-LOG_DIR=/var/log/kapacitor
-SCRIPT_DIR=/usr/lib/kapacitor/scripts
+DATA_DIR=/var/lib/gde
+LOG_DIR=/var/log/gde
+SCRIPT_DIR=/usr/lib/gde/scripts
 
 function install_init {
-    cp -f $SCRIPT_DIR/init.sh /etc/init.d/kapacitor
-    chmod +x /etc/init.d/kapacitor
+    cp -f $SCRIPT_DIR/init.sh /etc/init.d/gde
+    chmod +x /etc/init.d/gde
 }
 
 function install_systemd {
-    cp -f $SCRIPT_DIR/kapacitor.service /lib/systemd/system/kapacitor.service
+    cp -f $SCRIPT_DIR/gde.service /lib/systemd/system/gde.service
 }
 
 function enable_systemd {
-    systemctl enable kapacitor
+    systemctl enable gde
 }
 
 function enable_update_rcd {
-    update-rc.d kapacitor defaults
+    update-rc.d gde defaults
 }
 
 function enable_chkconfig {
-    chkconfig --add kapacitor
+    chkconfig --add gde
 }
 
-if ! id kapacitor >/dev/null 2>&1; then
-    useradd --system -U -M kapacitor -s /bin/false -d $DATA_DIR
+if ! id gde >/dev/null 2>&1; then
+    useradd --system -U -M gde -s /bin/false -d $DATA_DIR
 fi
-chmod a+rX $BIN_DIR/kapacitor*
+chmod a+rX $BIN_DIR/gde*
 
 mkdir -p $LOG_DIR
-chown -R -L kapacitor:kapacitor $LOG_DIR
+chown -R -L gde:gde $LOG_DIR
 mkdir -p $DATA_DIR
-chown -R -L kapacitor:kapacitor $DATA_DIR
+chown -R -L gde:gde $DATA_DIR
 
-test -f /etc/default/kapacitor || touch /etc/default/kapacitor
+test -f /etc/default/gde || touch /etc/default/gde
 
 # Distribution-specific logic
 if [[ -f /etc/redhat-release ]]; then
