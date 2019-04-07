@@ -63,7 +63,7 @@ gde --help
 #### Generate a gde config file:
 
 ```
-telegraf config > telegraf.conf
+gde config > gde.conf
 ```
 
 #### Generate config with only grafana input & S3 output plugins defined:
@@ -81,7 +81,7 @@ gde --config gde.conf --test
 #### Run gde with all plugins defined in config file:
 
 ```
-gde --config telegraf.conf
+gde --config gde.conf
 ```
 
 ## Input Plugins
