@@ -1,9 +1,9 @@
 #!/bin/bash
 
 BIN_DIR=/usr/bin
-DATA_DIR=/var/lib/gde
 LOG_DIR=/var/log/gde
 SCRIPT_DIR=/usr/lib/gde/scripts
+LOGROTATE_DIR=/etc/logrotate.d
 
 function install_init {
     cp -f $SCRIPT_DIR/init.sh /etc/init.d/gde
@@ -11,64 +11,94 @@ function install_init {
 }
 
 function install_systemd {
-    cp -f $SCRIPT_DIR/gde.service /lib/systemd/system/gde.service
+    cp -f $SCRIPT_DIR/gde.service $1
+    systemctl enable gde || true
+    systemctl daemon-reload || true
 }
 
-function enable_systemd {
-    systemctl enable gde
-}
-
-function enable_update_rcd {
+function install_update_rcd {
     update-rc.d gde defaults
 }
 
-function enable_chkconfig {
+function install_chkconfig {
     chkconfig --add gde
 }
 
-if ! id gde >/dev/null 2>&1; then
-    useradd --system -U -M gde -s /bin/false -d $DATA_DIR
+if ! grep "^gde:" /etc/group &>/dev/null; then
+    groupadd -r gde
 fi
-chmod a+rX $BIN_DIR/gde*
 
-mkdir -p $LOG_DIR
+if ! id gde &>/dev/null; then
+    useradd -r -M gde -s /bin/false -d /etc/gde -g gde
+fi
+
+test -d $LOG_DIR || mkdir -p $LOG_DIR
 chown -R -L gde:gde $LOG_DIR
-mkdir -p $DATA_DIR
-chown -R -L gde:gde $DATA_DIR
+chmod 755 $LOG_DIR
 
-test -f /etc/default/gde || touch /etc/default/gde
+# Remove legacy symlink, if it exists
+if [[ -L /etc/init.d/gde ]]; then
+    rm -f /etc/init.d/gde
+fi
+# Remove legacy symlink, if it exists
+if [[ -L /etc/systemd/system/gde.service ]]; then
+    rm -f /etc/systemd/system/gde.service
+fi
+
+# Add defaults file, if it doesn't exist
+if [[ ! -f /etc/default/gde ]]; then
+    touch /etc/default/gde
+fi
+
+# Add .d configuration directory
+if [[ ! -d /etc/gde/gde.d ]]; then
+    mkdir -p /etc/gde/gde.d
+fi
 
 # Distribution-specific logic
-if [[ -f /etc/redhat-release ]]; then
+if [[ -f /etc/redhat-release ]] || [[ -f /etc/SuSE-release ]]; then
     # RHEL-variant logic
     if [[ "$(readlink /proc/1/exe)" == */systemd ]]; then
-        install_systemd
-        # Do not enable service
+        install_systemd /usr/lib/systemd/system/gde.service
     else
-        # Assuming SysV
+        # Assuming SysVinit
         install_init
-        # Do not enable service
+        # Run update-rc.d or fallback to chkconfig if not available
+        if which update-rc.d &>/dev/null; then
+            install_update_rcd
+        else
+            install_chkconfig
+        fi
     fi
 elif [[ -f /etc/debian_version ]]; then
     # Debian/Ubuntu logic
     if [[ "$(readlink /proc/1/exe)" == */systemd ]]; then
-        install_systemd
-        enable_systemd
+        install_systemd /lib/systemd/system/gde.service
+        deb-systemd-invoke restart gde.service || echo "WARNING: systemd not running."
     else
-        # Assuming SysV
+        # Assuming SysVinit
         install_init
         # Run update-rc.d or fallback to chkconfig if not available
         if which update-rc.d &>/dev/null; then
-            enable_update_rcd
+            install_update_rcd
         else
-            enable_chkconfig
+            install_chkconfig
         fi
+        invoke-rc.d gde restart
     fi
 elif [[ -f /etc/os-release ]]; then
     source /etc/os-release
-    if [[ $ID = "amzn" ]]; then
+    if [[ "$NAME" = "Amazon Linux" ]]; then
+        # Amazon Linux 2+ logic
+        install_systemd /usr/lib/systemd/system/gde.service
+    elif [[ "$NAME" = "Amazon Linux AMI" ]]; then
         # Amazon Linux logic
         install_init
-        # Do not enable service
+        # Run update-rc.d or fallback to chkconfig if not available
+        if which update-rc.d &>/dev/null; then
+            install_update_rcd
+        else
+            install_chkconfig
+        fi
     fi
 fi
