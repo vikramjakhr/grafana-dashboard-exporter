@@ -36,19 +36,19 @@ var (
 	)
 )
 
-var header = `# Grafana-dashboard-exporter Configuration
+var header = `# GDE Configuration
 #
-# Grafana-dashboard-exporter is entirely plugin driven. All json are gathered from the
+# GDE is entirely plugin driven. All json are gathered from the
 # declared inputs, and sent to the declared outputs.
 #
-# Use 'grafana-dashboard-exporter -config gde.conf -test' to see what json a config
+# Use 'gde -config gde.conf -test' to see what json a config
 # file would generate.
 #
 # Environment variables can be used anywhere in this config file, simply prepend
 # them with $. For strings the variable must be within quotes (ie, "$STR_VAR"),
 # for numbers and booleans they should be plain (ie, $INT_VAR, $BOOL_VAR)
 
-# Configuration for grafana-dashboard-exporter agent
+# Configuration for gde agent
 [agent]
   ## Default data collection interval for all inputs
   interval = "10s"
@@ -57,9 +57,9 @@ var header = `# Grafana-dashboard-exporter Configuration
   round_interval = true
 
   ## Logging configuration:
-  ## Run grafana-dashboard-exporter with debug log messages.
+  ## Run gde with debug log messages.
   debug = false
-  ## Run grafana-dashboard-exporter in quiet mode (error log messages only).
+  ## Run gde in quiet mode (error log messages only).
   quiet = false
   ## Specify the log file name. The empty string means to log to stderr.
   logfile = ""
