@@ -83,3 +83,12 @@ gde --config gde.conf --test
 ```
 gde --config telegraf.conf
 ```
+
+## Input Plugins
+
+* [grafana](./plugins/inputs/grafana)
+
+## Output Plugins
+
+* [file](./plugins/outputs/file)
+* [s3](./plugins/outputs/s3)
