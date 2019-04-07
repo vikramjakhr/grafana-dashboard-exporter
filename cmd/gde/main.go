@@ -26,7 +26,7 @@ var fTest = flag.Bool("test", false, "gather metrics, print them out, and exit")
 var fConfig = flag.String("config", "", "configuration file to load")
 var fVersion = flag.Bool("version", false, "display the version")
 var fUsage = flag.String("usage", "",
-	"print usage for a plugin, ie, 'grafana-dashboard-exporter --usage s3'")
+	"print usage for a plugin, ie, 'gde --usage s3'")
 var fSampleConfig = flag.Bool("sample-config", false,
 	"print out full sample configuration")
 var fPidfile = flag.String("pidfile", "", "file to write our pid to")
@@ -65,11 +65,11 @@ func displayVersion() string {
 	return "v" + version
 }
 
-const usage = `Grafana-dashboard-exporter, The plugin-driven agent for exporting grafana dashboards json.
+const usage = `GDE, The plugin-driven agent for exporting grafana dashboards json.
 
 Usage:
 
-  grafana-dashboard-exporter [commands|flags]
+  gde [commands|flags]
 
 The commands & flags are:
 
@@ -78,19 +78,19 @@ The commands & flags are:
 
   --config <file>     configuration file to load
   --test              gather metrics once, print them to stdout, and exit
-  --usage             print usage for a plugin, ie, 'grafana-dashboard-exporter --usage s3'
+  --usage             print usage for a plugin, ie, 'gde --usage s3'
   --quiet             run in quiet mode
 
 Examples:
 
-  # generate a grafana-dashboard-exporter config file:
-  grafana-dashboard-exporter config > gde.conf
+  # generate a gde config file:
+  gde config > gde.conf
 
-  # run a single grafana-dashboard-exporter collection, outputing json to stdout
-  grafana-dashboard-exporter --config gde.conf --test
+  # run a single gde collection, outputing json to stdout
+  gde --config gde.conf --test
 
-  # run grafana-dashboard-exporter with all plugins defined in config file
-  grafana-dashboard-exporter --config gde.conf
+  # run gde with all plugins defined in config file
+  gde --config gde.conf
 `
 
 func usageExit(rc int) {
@@ -224,7 +224,7 @@ func main() {
 	if len(args) > 0 {
 		switch args[0] {
 		case "version":
-			fmt.Printf("Grafana-dashboard-exporter %s (git: %s %s)\n", displayVersion(), branch, commit)
+			fmt.Printf("GDE %s (git: %s %s)\n", displayVersion(), branch, commit)
 			return
 		case "config":
 			config.PrintSampleConfig(
@@ -250,7 +250,7 @@ func main() {
 		}
 		return
 	case *fVersion:
-		fmt.Printf("grafana-dashboard-exporter %s (git: %s %s)\n", displayVersion(), branch, commit)
+		fmt.Printf("gde %s (git: %s %s)\n", displayVersion(), branch, commit)
 		return
 	case *fSampleConfig:
 		config.PrintSampleConfig(
