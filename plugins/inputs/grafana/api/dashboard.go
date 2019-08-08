@@ -32,7 +32,6 @@ type DashboardMeta struct {
 	ProvisionedExternalId string    `json:"provisionedExternalId,omitempty"`
 }
 
-// TODO: remove uid and version and id from Model
 type Dashboard struct {
 	Meta  DashboardMeta          `json:"meta"`
 	Model map[string]interface{} `json:"dashboard"`

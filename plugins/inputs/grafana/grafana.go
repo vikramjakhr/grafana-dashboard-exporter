@@ -80,6 +80,11 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 					return err
 				}
 
+				// Remove generic keys
+				delete(dashboard.Model, "id")
+				delete(dashboard.Model, "uid")
+				delete(dashboard.Model, "version")
+
 				var obj interface{} = dashboard
 				if s.Meta {
 					obj = dashboard.Model
