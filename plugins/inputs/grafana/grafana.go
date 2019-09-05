@@ -15,6 +15,7 @@ type Grafana struct {
 	Host          string `toml:"host"`
 	Authorization string `toml:"authorization"`
 	Dashboard     bool   `toml:"dashboard"`
+	Meta    	  bool   `toml:"meta"`
 	Datasource    bool   `toml:"datasource"`
 }
 
@@ -26,6 +27,7 @@ var sampleConfig = `
   host = "http://<host>:<port>" # required
   authorization = "Bearer <token>" # required
   dashboard = true # true if dashboard needs to be fetched; default true
+  meta = true # true if dashboard metadata is required while fetching; default true
   datasource = true # true if datasource needs to be fetched; default true
 `
 
@@ -77,7 +79,17 @@ func (s *Grafana) Process(acc gde.Accumulator) error {
 				if err != nil {
 					return err
 				}
-				byts, err := json.Marshal(dashboard.Model)
+
+				// Remove generic keys
+				delete(dashboard.Model, "id")
+				delete(dashboard.Model, "uid")
+				delete(dashboard.Model, "version")
+
+				var obj interface{} = dashboard
+				if s.Meta {
+					obj = dashboard.Model
+				}
+				byts, err := json.Marshal(obj)
 				if err != nil {
 					return err
 				}

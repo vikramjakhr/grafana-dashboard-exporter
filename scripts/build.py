@@ -16,6 +16,10 @@ import argparse
 #### gde Variables
 ################
 
+##############################################################################
+# Usage: python scripts/build.py --clean --package --release --version 1.0.0 #
+##############################################################################
+
 # Packaging variables
 PACKAGE_NAME = "gde"
 INSTALL_ROOT_DIR = "/usr/bin"
